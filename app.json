@@ -1,0 +1,29 @@
+{
+  "expo": {
+    "name": "WhatTheWeather",
+    "description": "Super Cool Weather Application!",
+    "slug": "WhatTheWeather",
+    "ios": {
+      "bundleIdentifier": "com.heebeancreative.WhatTheWeather",
+      "supportsTablet": false
+    },
+    "android": {
+      "package": "com.heebeancreative.WhatTheWeather",
+      "versionCode": 11,
+      "permissions": ["ACCESS_COARSE_LOCATION", "ACCESS_FINE_LOCATION"]
+    },
+    "privacy": "public",
+    "sdkVersion": "31.0.0",
+    "platforms": ["ios", "android"],
+    "version": "1.0.13",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+
+    "updates": {
+      "enabled": true,
+      "checkAutomatically": "ON_LOAD",
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": ["**/*"]
+  }
+}
