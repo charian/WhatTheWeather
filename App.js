@@ -25,7 +25,7 @@ import { ifIphoneX } from "react-native-iphone-x-helper";
 import publicIP from "react-native-public-ip";
 
 import firebase from "firebase";
-
+//asd
 const firebaseConfig = {
   apiKey: "AIzaSyBGKpsEYb4Dr3pAfrotNTWGVvOLmS9-OGY"
   //authDomain: "whattheweather-8064a.firebaseapp.com",
