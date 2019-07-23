@@ -9,7 +9,9 @@ import {
   View,
   Button,
   Dimensions,
-  FlatList
+  FlatList,
+  ToastAndroid,
+  BackHandler
 } from "react-native";
 import { LinearGradient } from "expo";
 import { WeatherContext } from "../Context";
@@ -83,6 +85,20 @@ class TempScreen extends React.Component {
     // console.log(this.props.value.accuweatherKEY);
     //console.log("!!!!", this.props);
     //console.log("by temp" + this.props.value.weatherCasesObject);
+
+    // console.log(
+    //   "Current screen name : " + this.props.navigation.state.routeName
+    // );
+    // if (this.props.navigation.state.routeName === "Temp") {
+    //   BackHandler.addEventListener("hardwareBackPress", this.handleBackButton);
+    // } else {
+    //   this.exitApp = false;
+    //   BackHandler.removeEventListener(
+    //     "hardwareBackPress",
+    //     this.handleBackButton
+    //   );
+    // }
+
     if (this.props.value.setTemp === "0") {
       this.setState({
         windCalc: 3.6
@@ -94,10 +110,34 @@ class TempScreen extends React.Component {
     }
   };
 
+  // componentWillUnmount() {
+  //   this.exitApp = false;
+  //   BackHandler.removeEventListener("hardwareBackPress", this.handleBackButton);
+  // }
+  // handleBackButton = () => {
+  //   // 2000(2초) 안에 back 버튼을 한번 더 클릭 할 경우 앱 종료
+  //   if (this.exitApp == undefined || !this.exitApp) {
+  //     ToastAndroid.show("한번 더 누르시면 종료됩니다.", ToastAndroid.SHORT);
+  //     this.exitApp = true;
+
+  //     this.timeout = setTimeout(
+  //       () => {
+  //         this.exitApp = false;
+  //       },
+  //       2000 // 2초
+  //     );
+  //   } else {
+  //     clearTimeout(this.timeout);
+
+  //     BackHandler.exitApp(); // 앱 종료
+  //   }
+  //   return true;
+  // };
   _getHourly = () => {};
 
   render() {
     //const { navigate } = this.props.navigation;
+    //console.log(this.props.navigation);
     const { customStyleIndex, weatherSmallImage } = this.state;
     return (
       <View
@@ -164,7 +204,7 @@ class TempScreen extends React.Component {
                   / {this.props.value.realFeel}
                 </Text>
                 <Text style={styles.currentRealDeg}>º</Text>
-                <TouchableOpacity
+                {/* <TouchableOpacity
                   onPress={this._toggleModal1}
                   style={styles.locationTitle}
                 >
@@ -172,7 +212,7 @@ class TempScreen extends React.Component {
                     source={require("./../assets/images/badge-realfeel-2x.png")}
                     style={styles.realFeelBadge}
                   />
-                </TouchableOpacity>
+                </TouchableOpacity> */}
                 <Modal
                   isVisible={this.state.isModalVisible1}
                   animationIn="bounceIn"
@@ -223,6 +263,9 @@ class TempScreen extends React.Component {
                     {/* {this.props.value.thenyesterday}º{" "} */}
                     {this.props.value.thenYesterdayCompare},{" "}
                     {this.props.value.nameFull}
+                  </Text>
+                  <Text style={styles.tempYesterdayText} numberOfLines={1}>
+                    {this.props.value.dailyHeadline}
                   </Text>
                 </View>
               </View>
@@ -313,13 +356,13 @@ class TempScreen extends React.Component {
                     / {this.props.value.realFeel}
                   </Text>
                   <Text style={styles.currentRealDegSmall}>º</Text>
-
+                  {/* 
                   <TouchableOpacity onPress={this._toggleModal1}>
                     <Image
                       source={require("./../assets/images/badge-realfeel-2x.png")}
                       style={styles.realFeelBadgeSmall}
                     />
-                  </TouchableOpacity>
+                  </TouchableOpacity> */}
                 </View>
                 <View style={styles.houtlyContainerInner02}>
                   <Text style={styles.tempYesterdayTextSmall}>
@@ -615,6 +658,7 @@ const styles = StyleSheet.create({
   lower: {
     flex: 1,
     paddingLeft: 25,
+    paddingRight: 25,
     zIndex: 5
   },
   lowerDgree: {
@@ -627,11 +671,21 @@ const styles = StyleSheet.create({
   },
   tempYesterday: {
     flex: 1,
-    height: 15,
+    height: 35,
     position: "absolute",
     left: 0,
-    bottom: -9
+    paddingRight: 10,
+    width: "100%",
+    bottom: -27
   },
+  // tempYesterday: {
+  //   flex: 1,
+  //   height: 15,
+  //   position: "absolute",
+  //   left: 0,
+  //   bottom: -9
+  // },
+
   tempYesterdayText: {
     color: "#fff",
     fontFamily: "NanumSquareRoundEB",

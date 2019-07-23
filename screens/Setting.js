@@ -71,7 +71,9 @@ class SettingScreen extends React.Component {
       selectLocation: null,
       selectLocationSelect: selectLocationRadio.Select.Images,
       selectLocationNone: selectLocationRadio.None.Images,
-      setTemp: this.props.value.setTemp
+      setTemp: this.props.value.setTemp,
+      granted: this.props.value.granted,
+      grantedInitial: this.props.value.grantedInitial
     };
 
     this.reRenderSomething = this.props.navigation.addListener(
@@ -87,10 +89,26 @@ class SettingScreen extends React.Component {
   componentDidMount = () => {
     this._loadLocations();
     this._loadCurrent();
-
+    this._getGranted();
     console.log("현재 설정값" + this.props.value.setTemp);
     console.log("현재 설정값" + this.props.value.setSpeed);
-    console.log("현재 설정값" + this.props.value.setPre);
+    console.log("현재 설정값" + this.props.value.grantedInitial);
+    //console.log(this.props.value.granted);
+    // console.log(this.state.grantedInitial);
+  };
+
+  _getGranted = () => {
+    if (this.state.granted === true) {
+      this.setState({
+        grantedInitial: i18n.t("Enabled")
+      });
+      console.log("현재 GPS기반");
+    } else {
+      this.setState({
+        grantedInitial: i18n.t("Unnabled")
+      });
+      console.log("현재 IP기반");
+    }
   };
 
   componentWillUnmount() {
@@ -407,11 +425,14 @@ class SettingScreen extends React.Component {
             <ScrollView>
               <View style={styles.sectionListContainer}>
                 <View style={styles.sectionTitle}>
-                  <Text style={styles.sectionTitleText}>{i18n.t("unit")}</Text>
+                  <Text style={styles.sectionTitleText}>
+                    {i18n.t("Preferences")}
+                  </Text>
                 </View>
                 <View style={styles.sectionList}>
                   <Text style={styles.sectionListText}>
-                    {i18n.t("metric")}, {i18n.t("imperial")}
+                    {i18n.t("unit")}
+                    {/* {i18n.t("unit")}{i18n.t("metric")}, {i18n.t("imperial")} */}
                   </Text>
                   <SwitchSelector
                     initial={this.state.setTemp}
@@ -446,17 +467,57 @@ class SettingScreen extends React.Component {
                     ]}
                   />
                 </View>
+                <View style={styles.sectionList}>
+                  <Text style={styles.sectionListText}>
+                    {i18n.t("Permission")}
+                  </Text>
+                  <Text
+                    style={{
+                      position: "absolute",
+                      right: 5,
+                      top: 21,
+                      fontFamily: "NanumSquareRoundEB",
+                      fontSize: 13,
+                      color: "#3F3F3F"
+                    }}
+                  >
+                    {this.state.grantedInitial}
+                  </Text>
+                  {/* <SwitchSelector
+                    initial={this.state.grantedInitial}
+                    onPress={value => this._selectTempUnit(value)}
+                    textColor={"#3F3F3F"} //'#7a44cf'
+                    selectedColor={"#fff"}
+                    buttonColor={"#FF452C"}
+                    borderColor={"#FF452C"}
+                    //borderWidth={2}
+                    height={32}
+                    style={{
+                      width: 100,
+                      borderWidth: 2,
+                      borderRadius: 20,
+                      borderColor: "#FF452C",
+                      opacity: 1,
+                      position: "absolute",
+                      right: 5,
+                      top: 12
+                    }}
+                    textStyle={{
+                      fontFamily: "NanumSquareRoundEB",
+                      fontSize: 14
+                    }}
+                    selectedTextStyle={{
+                      fontFamily: "NanumSquareRoundEB",
+                      fontSize: 14
+                    }}
+                    options={[
+                      { label: "GPS", value: "M" }, //images.feminino = require('./path_to/assets/img/feminino.png')
+                      { label: "IP", value: "I" } //images.masculino = require('./path_to/assets/img/masculino.png')
+                    ]}
+                  /> */}
+                </View>
                 <View style={{ paddingVertical: 10 }}>
-                  <View style={{ marginBottom: 10 }}>
-                    <Text
-                      style={{
-                        fontFamily: "NanumSquareRoundEB",
-                        fontSize: 12,
-                        color: "#9A9A9A"
-                      }}
-                    >
-                      {i18n.t("metric")}
-                    </Text>
+                  <View>
                     <Text
                       style={{
                         fontFamily: "NanumSquareRoundEB",
@@ -464,19 +525,79 @@ class SettingScreen extends React.Component {
                         color: "#9A9A9A"
                       }}
                     >
-                      Square millimeter, Hectare, Square kilometer, Celsius
+                      {i18n.t("metric")} : Square millimeter, Hectare, Square
+                      kilometer, Celsius
                     </Text>
                   </View>
                   <View>
                     <Text
                       style={{
                         fontFamily: "NanumSquareRoundEB",
-                        fontSize: 12,
+                        fontSize: 10,
                         color: "#9A9A9A"
                       }}
                     >
-                      {i18n.t("imperial")}
+                      {i18n.t("imperial")} : Square inch, Square yard, Square
+                      mile, Fahrenheit
                     </Text>
+                  </View>
+                  <View style={{ paddingVertical: 10 }}>
+                    <View style={{ marginBottom: 10 }}>
+                      <Text
+                        style={{
+                          fontFamily: "NanumSquareRoundEB",
+                          fontSize: 10,
+                          color: "#9A9A9A"
+                        }}
+                      >
+                        {i18n.t("accurate")}
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+              </View>
+
+              {/* <View style={styles.sectionListContainer}>
+                <View style={styles.sectionTitle}>
+                  <Text style={styles.sectionTitleText}>GPS Permission</Text>
+                </View>
+                <View style={styles.sectionList}>
+                  <Text style={styles.sectionListText}>GPS, IP Address</Text>
+                  <SwitchSelector
+                    initial={this.state.grantedInitial}
+                    onPress={value => this._selectTempUnit(value)}
+                    textColor={"#3F3F3F"} //'#7a44cf'
+                    selectedColor={"#fff"}
+                    buttonColor={"#FF452C"}
+                    borderColor={"#FF452C"}
+                    //borderWidth={2}
+                    height={32}
+                    style={{
+                      width: 100,
+                      borderWidth: 2,
+                      borderRadius: 20,
+                      borderColor: "#FF452C",
+                      opacity: 1,
+                      position: "absolute",
+                      right: 5,
+                      top: 12
+                    }}
+                    textStyle={{
+                      fontFamily: "NanumSquareRoundEB",
+                      fontSize: 14
+                    }}
+                    selectedTextStyle={{
+                      fontFamily: "NanumSquareRoundEB",
+                      fontSize: 14
+                    }}
+                    options={[
+                      { label: "GPS", value: "M" }, //images.feminino = require('./path_to/assets/img/feminino.png')
+                      { label: "IP", value: "I" } //images.masculino = require('./path_to/assets/img/masculino.png')
+                    ]}
+                  />
+                </View>
+                <View style={{ paddingVertical: 10 }}>
+                  <View style={{ marginBottom: 10 }}>
                     <Text
                       style={{
                         fontFamily: "NanumSquareRoundEB",
@@ -484,11 +605,12 @@ class SettingScreen extends React.Component {
                         color: "#9A9A9A"
                       }}
                     >
-                      Square inch, Square yard, Square mile, Fahrenheit
+                      GPS로 위치 정보를 가져오는것이 더욱 정확합니다.{"\n"}
+                      스마트폰의 설정에서 앱의 위치정보 사용을 승인 해주세요
                     </Text>
                   </View>
                 </View>
-              </View>
+              </View> */}
 
               {/* <View style={styles.sectionListContainer}>
                 <View style={styles.sectionTitle}>

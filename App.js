@@ -9,30 +9,29 @@ import {
   AsyncStorage,
   Image,
   AppState,
-  Dimensions
+  Dimensions,
+  ToastAndroid,
+  BackHandler
 } from "react-native";
-import {
-  AppLoading,
-  Asset,
-  Font,
-  Icon,
-  LinearGradient,
-  RefreshControl
-} from "expo";
+import { Font, LinearGradient } from "expo";
 import AppNavigator from "./navigation/AppContainer";
-import { DrawerActions } from "react-navigation-drawer";
 import { createAppContainer } from "react-navigation";
 import { WeatherContext } from "./Context";
-import SelectLocation from "./location";
 import { Localization } from "expo-localization";
 import i18n from "i18n-js";
 import { API_KEY } from "./Keys";
-import { datagokr_KEY } from "./Keys";
 import { air_KEY } from "./Keys";
-import { kakao_KEY } from "./Keys";
-import { token } from "./Keys";
-import PTRView from "react-native-pull-to-refresh";
 import { ifIphoneX } from "react-native-iphone-x-helper";
+import publicIP from "react-native-public-ip";
+
+import firebase from "firebase";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBGKpsEYb4Dr3pAfrotNTWGVvOLmS9-OGY"
+  //authDomain: "whattheweather-8064a.firebaseapp.com",
+  //databaseURL: "https://whattheweather-8064a.firebaseio.com"
+  //storageBucket: "bucket.appspot.com"
+};
 
 let deviceWidth = Dimensions.get("window").width;
 let deviceHeight = Dimensions.get("window").height;
@@ -100,7 +99,23 @@ const en = {
   remarkOfSearch: "Please enter at least 3 characters",
   locationPlaceholder: "Location keywords",
   realfeel:
-    "The AccuWeather.com RealFeel® Temperature was created in the 1990s by Joel N. Myers, Michael A. Steinberg, Joseph Sobel, Elliot Abrams and Evan Myers. The  RealFeel Temperature is an equation that takes into  account many different factors to determine how the temperature actually feels outside. It is the first temperature to take into account multiple factors to determine how hot and cold feels. Some of the components that are used in the equation are humidity, cloud cover, winds, sun intensity and angle of the sun. Humidity is a large contributor to determining the RealFeel, but the time of the day also is important, due to the angle of the sun. In the morning the low angle of the sun gives off less heat because the energy is spread out, according to AccuWeather.com Expert Senior Meteorologist Dan Kottlowski. In the afternoon, the sun is overhead and the sun's energy is more direct and gives off more energy, making it feel warmer. 'The RealFeel takes into consideration the angle of the sun and its affects on an object or the body,' Kottlowski said. Once the equation was created, the inventors took the RealFeel to AccuWeather.com meteorologists, media and the public to make sure they weren't missing anything and to gather research on how they could improve the product, Steinberg said. The equation also takes into consideration how people perceive the weather. Steinberg said that this can be debated, since not everyone perceives weather the same way, but the equation uses the average person's perception of weather and adds that into the RealFeel equation. The RealFeel Temperature can be used throughout all four seasons with the same equation. Wind is a main component that determines how people perceive the weather and a factor that is used to determine the AccuWeather RealFeel. AccuWeather.com Senior Meteorologist Kristina Pydynowski, said that the wind can make a person feel colder because the cold wind blowing removes heat from your body. 'The stronger the wind, the faster the heat is getting removed from your body, so it will feel colder outside,' Pydynowski said. Humidity is another component in equating the RealFeel and also plays a role in how people feel outside. If there is low humidity in the air (meaning less moisture) when you sweat, the moisture is able to evaporate. This works as your body's cooling process, so you won't feel as hot. If there is high humidity in the air, the evaporating process is slowed down or stopped because there is already a lot of moisture in the air. 'That is why you get the sticky feeling, because the sweat isn't able to evaporate as efficiently,' Pydynowski said. The AccuWeather.com RealFeel Temperature is one of a kind because AccuWeather is the only company that can use more than two elements in its equation, to determine the RealFeel because of the patents that AccuWeather has, Steinberg said."
+    "The AccuWeather.com RealFeel® Temperature was created in the 1990s by Joel N. Myers, Michael A. Steinberg, Joseph Sobel, Elliot Abrams and Evan Myers. The  RealFeel Temperature is an equation that takes into  account many different factors to determine how the temperature actually feels outside. It is the first temperature to take into account multiple factors to determine how hot and cold feels. Some of the components that are used in the equation are humidity, cloud cover, winds, sun intensity and angle of the sun. Humidity is a large contributor to determining the RealFeel, but the time of the day also is important, due to the angle of the sun. In the morning the low angle of the sun gives off less heat because the energy is spread out, according to AccuWeather.com Expert Senior Meteorologist Dan Kottlowski. In the afternoon, the sun is overhead and the sun's energy is more direct and gives off more energy, making it feel warmer. 'The RealFeel takes into consideration the angle of the sun and its affects on an object or the body,' Kottlowski said. Once the equation was created, the inventors took the RealFeel to AccuWeather.com meteorologists, media and the public to make sure they weren't missing anything and to gather research on how they could improve the product, Steinberg said. The equation also takes into consideration how people perceive the weather. Steinberg said that this can be debated, since not everyone perceives weather the same way, but the equation uses the average person's perception of weather and adds that into the RealFeel equation. The RealFeel Temperature can be used throughout all four seasons with the same equation. Wind is a main component that determines how people perceive the weather and a factor that is used to determine the AccuWeather RealFeel. AccuWeather.com Senior Meteorologist Kristina Pydynowski, said that the wind can make a person feel colder because the cold wind blowing removes heat from your body. 'The stronger the wind, the faster the heat is getting removed from your body, so it will feel colder outside,' Pydynowski said. Humidity is another component in equating the RealFeel and also plays a role in how people feel outside. If there is low humidity in the air (meaning less moisture) when you sweat, the moisture is able to evaporate. This works as your body's cooling process, so you won't feel as hot. If there is high humidity in the air, the evaporating process is slowed down or stopped because there is already a lot of moisture in the air. 'That is why you get the sticky feeling, because the sweat isn't able to evaporate as efficiently,' Pydynowski said. The AccuWeather.com RealFeel Temperature is one of a kind because AccuWeather is the only company that can use more than two elements in its equation, to determine the RealFeel because of the patents that AccuWeather has, Steinberg said.",
+  Preferences: "Preferences",
+  Permission: "Location Permission",
+  Enabled: "Allowed",
+  Unnabled: "Unallowed",
+  station: "Measuring station",
+  Measuringtime: "Measuring time",
+  locationtext: "Fetch New Data",
+  Monday: "Mon",
+  Tuesday: "Tue",
+  Wednesday: "Wed",
+  Thursday: "Thu",
+  Friday: "Fri",
+  Saturday: "Sat",
+  Sunday: "Sun",
+  accurate:
+    "It is more accurate to import location information with GPS. Please allow your app to use location information in your smartphone's settings"
 };
 //{i18n.t("airquality")}
 const ko = {
@@ -147,11 +162,11 @@ const ko = {
   goodRemark: "이야! 매일매일 오늘만 같아라!",
   moderRemark: "마스크 없이 외부활동을 할 수 있습니다.",
   unforRemark:
-    "노약자와 아이들, 임산부의 외출은 가급적 삼가하시는것이 좋습니다. 굳이 외출 하시려면 마스크를 착용해주세요.",
+    "노약자와 아이들, 임산부의 외출은 가급적 삼가하시는것이 좋습니다.\n굳이 외출 하시려면 마스크를 착용해주세요.",
   unhealthyRemark:
-    "가급적이면 외출하지 않는것을 추천드립니다. 굳이 외출 하시려면 마스크를 착용해주세요.",
+    "가급적이면 외출하지 않는것을 추천드립니다.\n굳이 외출 하시려면 마스크를 착용해주세요.",
   veryunRemark: "마스크 없이 절대 외출하지 마세요.",
-  hazardousRemark: "마스크를 쓰던 말던,p무조건 외출 하지 않는것이 좋습니다.",
+  hazardousRemark: "마스크를 쓰던 말던, 무조건 외출 하지 않는것이 좋습니다.",
   menuSetting: "설정",
   addLocation: "지역 추가",
   unit: "단위",
@@ -162,10 +177,26 @@ const ko = {
   saveAnother: "다른지역 추가하기",
   SavedLocations: "저장된 지역들",
   Add: "추가하기",
-  remarkOfSearch: "도로명 주소는 지원이 안됩니다. 읍,면,동 으로 검색해주세요",
+  remarkOfSearch: "도로명 주소는 지원이 안됩니다.\n읍,면,동 으로 검색해주세요",
   locationPlaceholder: "읍, 면, 동",
   realfeel:
-    "AccuWeather에서 제공하는 RealFeel® Temperature는 1990년대에 Joel N. Myers, Michael A에 의해 만들어진 최고의 체감온도 지수입니다. RealFeel Temperature는 많은 다른 요소들을 고려한 방정식입니다. 무더위와 추위가 어느 정도인지 판단하기 위해 여러 요인을 고려한 것입니다. 방정식에 사용되는 지표는 습도, 구름 덮개, 바람, 태양 강도, 태양의 각도가 있습니다. 습도는 체감온도를 결정하는 데 큰 기여를 하지만 태양의 각도로 인해 하루의 시간도 중요합니다."
+    "AccuWeather에서 제공하는 RealFeel® Temperature는 1990년대에 Joel N. Myers, Michael A에 의해 만들어진 최고의 체감온도 지수입니다. RealFeel Temperature는 많은 다른 요소들을 고려한 방정식입니다. 무더위와 추위가 어느 정도인지 판단하기 위해 여러 요인을 고려한 것입니다. 방정식에 사용되는 지표는 습도, 구름 덮개, 바람, 태양 강도, 태양의 각도가 있습니다. 습도는 체감온도를 결정하는 데 큰 기여를 하지만 태양의 각도로 인해 하루의 시간도 중요합니다.",
+  Preferences: "환경설정",
+  Permission: "위치 권한",
+  Enabled: "허용됨",
+  Unnabled: "허용 안됨",
+  station: "대기오염 측정소",
+  Measuringtime: "대기질 축정시간",
+  locationtext: "데이터 새로 가져오는중",
+  Monday: "월",
+  Tuesday: "화",
+  Wednesday: "수",
+  Thursday: "목",
+  Friday: "금",
+  Saturday: "토",
+  Sunday: "일",
+  accurate:
+    "GPS로 위치 정보를 가져오는것이 더욱 정확합니다. 스마트폰의 설정에서 앱의 위치정보 사용을 승인 해주세요."
 };
 
 i18n.fallbacks = true;
@@ -285,15 +316,15 @@ const weatherCases = {
     subtitle: "Go get your ass burnt",
     icon: "weather-sunny",
     iconImg: require("./assets/images/icon-sunny-2x.png"),
-    iconImgN: require("./assets/images/icon-sunny-2x.png"),
+    iconImgN: require("./assets/images/icon-clear-n-2x.png"),
     width: 243,
     height: 234,
-    widthN: 243, // 밤 가로
-    heightN: 234, // 밤 세로
+    widthN: 176, // 밤 가로
+    heightN: 244, // 밤 세로
     widthSmall: 74, // 작은것
     heightSmall: 74,
-    widthSmallN: 74, // 작은것 밤
-    heightSmallN: 74,
+    widthSmallN: 44, // 작은것 밤
+    heightSmallN: 60,
     weatherImagemarginBottom: -30
   },
 
@@ -323,13 +354,13 @@ const weatherCases = {
     icon: "weather-sunny",
     iconImg: require("./assets/images/icon-rain-small-2x.png"),
     iconImgN: require("./assets/images/icon-rain-small-n-2x.png"),
-    width: 238,
+    width: 242,
     height: 182,
-    widthN: 238, // 밤 가로
+    widthN: 242, // 밤 가로
     heightN: 182, // 밤 세로
-    widthSmall: 73, // 작은것
+    widthSmall: 79, // 작은것
     heightSmall: 58,
-    widthSmallN: 73, // 작은것 밤
+    widthSmallN: 79, // 작은것 밤
     heightSmallN: 58,
     weatherImagemarginBottom: -30
   },
@@ -378,6 +409,7 @@ export default class App extends React.Component {
     super(props);
     this.state = {
       isLoaded: false,
+      granted: false,
       error: null,
       lat: null,
       long: null,
@@ -466,7 +498,16 @@ export default class App extends React.Component {
       weatherText: [],
       dailyHeadline: null,
       currentGPS: null,
-      weatherCategory: null
+      weatherCategory: null,
+      grantLocation: null,
+      grantbtn: this._getGrantBtn,
+      granted: null,
+      grantedTXT: null,
+      stationName: null,
+      calrTime: null,
+      grantedInitial: null,
+      aqStationTime: null,
+      todateday: null
       //initialScreen: "Temp"
       //settingcDUpdateContext:this._callCDUbySetting
     };
@@ -488,6 +529,9 @@ export default class App extends React.Component {
     ) {
       console.log("지역이 변경되었음");
       this._loadLocations(); // api fetch 함수
+      this.setState({
+        locationtext: i18n.t("locationtext")
+      });
     }
     if (
       prevState.setTemp !== this.state.setTemp &&
@@ -498,24 +542,154 @@ export default class App extends React.Component {
     }
   }
 
+  _notgetLocationAsync = () => {
+    console.log("denied");
+    this._loadLocations();
+    console.log("denied");
+  };
+
+  async getLocationAsync() {
+    const { status: permissionStatus } = await Expo.Permissions.getAsync(
+      Expo.Permissions.LOCATION
+    );
+    console.log("permissionStatus " + permissionStatus);
+    //console.log("permissionStatus " + status);
+
+    //undetermined
+    //granted
+
+    if (permissionStatus !== "granted") {
+      // return (
+      //   <View>
+      //     <Text>ASD</Text>
+      //   </View>
+      // )
+      console.log("no granted");
+      this.setState({
+        //fontLoaded: false,
+        loadingText: "Location permission",
+        granted: false,
+        grantedTXT: "by IP Address",
+        grantedInitial: "1",
+        grantLocation:
+          "The location permission is not granted\nand the IP address is used."
+      });
+      this._loadLocations();
+      // alert(
+      //   "Grant Permission",
+      //   "App needs location access to abc.",
+      //   [
+      //     {
+      //       text: "Cancel",
+      //       onPress: () => console.log("Cancel Pressed"),
+      //       style: "cancel"
+      //     },
+      //     {
+      //       text: "OK",
+      //       onPress: async () => {
+      //         const { status } = await Expo.Permissions.askAsync(
+      //           Expo.Permissions.LOCATION
+      //         );
+      //         if (status === "granted") {
+      //           const locatio = await Expo.Location.watchPositionAsync(
+      //             { enableHighAccuracy: true },
+      //             callback
+      //           );
+      //           return locatio;
+      //         } else {
+      //           alert("Please Turn On your Device GPS");
+      //         }
+      //       }
+      //     }
+      //   ],
+      //   { cancelable: false }
+      // );
+      //this.getLocationAsync();
+    } else {
+      console.log("granted permission");
+      this.setState({
+        granted: true,
+        grantedTXT: "by GPS",
+        grantedInitial: "0",
+        grantbtn: false,
+        grantLocation: "You grant the location permission."
+      });
+      this._loadLocations();
+    }
+  }
+
+  _getdate = () => {
+    today = new Date();
+    week = new Array(
+      i18n.t("Sunday"),
+      i18n.t("Monday"),
+      i18n.t("Tuesday"),
+      i18n.t("Wednesday"),
+      i18n.t("Thursday"),
+      i18n.t("Friday"),
+      i18n.t("Saturday")
+    );
+    this.setState({
+      todateday: week[today.getDay()]
+    });
+  };
+
+  _firebase = () => {
+    firebase.initializeApp = {
+      apiKey: "AIzaSyAIj24nkV5CRFe-9QIzBPz96L6oQ0X8gJk",
+      authDomain: "api-6908354807258023543-445984.firebaseapp.com",
+      databaseURL: "https://api-6908354807258023543-445984.firebaseio.com",
+      projectId: "api-6908354807258023543-445984",
+      storageBucket: "",
+      messagingSenderId: "810194407762",
+      appId: "1:810194407762:web:eab9597751bc6256"
+    };
+  };
+
   async componentDidMount() {
+    this._firebase();
+
+    // var offset = new Date().getTimezoneOffset();
+    // console.log(Intl.DateTimeFormat().resolvedOptions().timeZone);
+    this.backHandlerListener = BackHandler.addEventListener(
+      "hardwareBackPress",
+      this._handleBackPress
+    );
+
+    this._getdate();
+
+    // await firebase.analytics().setCurrentScreen("GiveGithubStarsScreen");
+    //firebase.analytics();
+
+    await Font.loadAsync({
+      NanumSquareRoundEB: require("./assets/fonts/NanumSquareRoundEB.ttf")
+    }).then(() => {
+      this.setState({
+        fontLoaded: false,
+        loadingText: "Load Font"
+      });
+      console.log("font load : " + this.state.fontLoaded);
+    });
+
+    //this.getLocationAsync();
+
     console.log(this.state.setTemp + "현재 유닛");
     AppState.addEventListener("change", this._handleAppStateChange);
     //console.log(AppContainer);
     //console.log("font load : " + this.state.fontLoaded);
-    await Font.loadAsync({
-      NanumSquareRoundEB: require("./assets/fonts/NanumSquareRoundEB.ttf")
-    }).then(() => {
-      this.setState({ fontLoaded: false, loadingText: "Load Font" });
-      console.log("font load : " + this.state.fontLoaded);
-    });
+
     this.setState({
       deviceLocale: i18n.locale
     });
 
-    console.log("aaaaaa" + this.navigator && this.navigator);
+    this.navigator &&
+      this.navigator.dispatch(NavigationActions.navigate({ routeName: Aq }));
+
+    //console.log("aaaaaa" + NavigationActions.navigate);
     //this.navigator.navigate("Setting");
     //console.log("device locale is " + this.state.deviceLocale);
+
+    console.log("askljhdaskljdaklsdlkjasdkljasdkljasdlkasjlkjd");
 
     if (this.state.deviceLocale === "ko-KR") {
       this.setState({
@@ -533,14 +707,31 @@ export default class App extends React.Component {
 
   componentWillUnmount() {
     AppState.removeEventListener("change", this._handleAppStateChange);
+    BackHandler.removeEventListener("hardwareBackPress", this.handleBackPress);
   }
-
+  _handleBackPress = () => {
+    if (this.counterAppExit === 1) {
+      return false;
+    }
+    this.counterAppExit = 1;
+    ToastAndroid.show(
+      "뒤로가기를 두 번 누르면 종료 됩니다.",
+      ToastAndroid.SHORT
+    );
+    setTimeout(() => {
+      this.counterAppExit = 0;
+    }, 1000);
+    return true; // Do not exit app
+  };
   _handleAppStateChange = nextAppState => {
     if (
       this.state.appState.match(/inactive|background/) &&
       nextAppState === "active"
     ) {
       this._loadLocations();
+      this.setState({
+        locationtext: i18n.t("locationtext")
+      });
       console.log("App has come to the foreground!");
     }
     this.setState({ appState: nextAppState });
@@ -548,7 +739,8 @@ export default class App extends React.Component {
 
   _loadLocations = async () => {
     console.log("Load Location Start");
-    this.setState({ isLoaded: false });
+
+    //this.setState({ isLoaded: false });
     //this._loadInitial();
     try {
       const savedLocations = await AsyncStorage.getItem("LocationKeys");
@@ -623,6 +815,117 @@ export default class App extends React.Component {
     console.log("get geo start");
     this.setState({
       loadingText: "Get latitude, longitude"
+      //granted: true
+      //grantLocation: "You grant the location permission."
+    });
+
+    navigator.geolocation.getCurrentPosition(
+      position => {
+        this.setState({
+          lat: position.coords.latitude,
+          long: position.coords.longitude,
+          granted: true,
+          grantedTXT: "by GPS",
+          grantedInitial: "0",
+          grantLocation: "You grant the location permission."
+        });
+        //this._getWeather(position.coords.latitude, position.coords.longitude);
+        ///console.log("leng" + leng);
+        //console.log(position);
+        this
+          ._getKeybyGPS
+          //position.coords.latitude, position.coords.longitude
+          ();
+      },
+      error => {
+        // this.setState({
+        //   error: error
+        // });
+        this._getIP();
+        console.log("no GPS" + this.state.error);
+      },
+      {
+        enableHighAccuracy: false,
+        timeout: 10000,
+        maximumAge: 2000
+      } //for fucking android
+    );
+  };
+
+  _getIP = () => {
+    console.log("ip로 넘어왔나?");
+    publicIP()
+      .then(ip => {
+        //console.log(ip);
+        // '47.122.71.234'
+        return fetch(
+          `https://dataservice.accuweather.com/locations/v1/cities/ipaddress?apikey=${API_KEY}&details=true&language=` +
+            this.state.deviceLocale +
+            "&q" +
+            ip
+        );
+      })
+      .then(response => response.json())
+      .then(byIPData => {
+        //console.log(byIPData);
+        this.setState({
+          lat: byIPData.GeoPosition.Latitude,
+          long: byIPData.GeoPosition.Longitude,
+          grantedTXT: "by IP Address",
+          granted: false,
+          grantedInitial: "1",
+          grantLocation:
+            "The location permission is not granted\nand the IP address is used."
+        });
+        this
+          ._getKeybyGPS
+          //position.coords.latitude, position.coords.longitude
+          ();
+        //console.log(this.state.lat + this.state.long);
+      })
+      .catch(error => {
+        console.log(error);
+        // 'Unable to get IP address.'
+      });
+
+    // if (this.state.granted === false) {
+    //   publicIP()
+    //     .then(ip => {
+    //       //console.log(ip);
+    //       // '47.122.71.234'
+    //       return fetch(
+    //         `https://dataservice.accuweather.com/locations/v1/cities/ipaddress?apikey=${API_KEY}&details=true&language=` +
+    //           this.state.deviceLocale +
+    //           "&q" +
+    //           ip
+    //       );
+    //     })
+    //     .then(response => response.json())
+    //     .then(byIPData => {
+    //       //console.log(byIPData);
+    //       this.setState({
+    //         lat: byIPData.GeoPosition.Latitude,
+    //         long: byIPData.GeoPosition.Longitude
+    //       });
+    //       this
+    //         ._getKeybyGPS
+    //         //position.coords.latitude, position.coords.longitude
+    //         ();
+    //       //console.log(this.state.lat + this.state.long);
+    //     })
+    //     .catch(error => {
+    //       console.log(error);
+    //       // 'Unable to get IP address.'
+    //     });
+    // } else {
+    //   console.log("Start by IP Address");
+    // }
+  };
+
+  _regetGeo = () => {
+    console.log("get geo start");
+    this.setState({
+      loadingText: "Get latitude, longitude"
     });
     navigator.geolocation.getCurrentPosition(
       position => {
@@ -645,6 +948,7 @@ export default class App extends React.Component {
       },
       { enableHighAccuracy: true, timeout: 10000, maximumAge: 3000 } //for fucking android
     );
+    this.componentDidMount();
   };
 
   _getKeybyGPS = () =>
@@ -810,7 +1114,7 @@ export default class App extends React.Component {
         this.setState({
           // temperature: Math.round(locationData[0].Temperature.Metric.Value), // 도씨
           // temperatureF: Math.round(locationData[0].Temperature.Imperial.Value), // 화씨
-          name: locationData[0].WeatherText.replace(/\s/gi, ""), //.replace(/\-/g,'')
+          name: locationData[0].WeatherText.replace(/\s/gi, ""),
           nameFull: locationData[0].WeatherText,
           nameLowerCase: locationData[0].WeatherText.toLowerCase().replace(
             /\s/gi,
@@ -889,6 +1193,7 @@ export default class App extends React.Component {
         }
         if (
           this.state.name.includes("화창") ||
+          this.state.name.includes("해") ||
           this.state.name.includes("unny") ||
           this.state.name.includes("ear") ||
           this.state.name.includes("맑음")
@@ -951,6 +1256,8 @@ export default class App extends React.Component {
         }
         if (
           this.state.name.includes("흐림") ||
+          this.state.name.includes("흐") ||
+          this.state.name.includes("구름") ||
           this.state.name.includes("안개") ||
           this.state.name.includes("뿌연") ||
           this.state.name.includes("oud") ||
@@ -1189,6 +1496,7 @@ export default class App extends React.Component {
 
       .then(response => response.json())
       .then(airData => {
+        //console.log(airData);
         console.log("air data" + airData.status);
         console.log("air data city" + airData.data.city);
         console.log("air data country" + airData.data.country);
@@ -1214,20 +1522,28 @@ export default class App extends React.Component {
         } else {
           console.log("data dont have");
         }
+        var date = new Date();
+        var offsetInHours = date.getTimezoneOffset() / -60;
+        var datesubstring = date.getHours();
+        console.log(offsetInHours);
+        console.log(datesubstring);
 
         this.setState({
           loadingText: "Get Air Polution Data",
-
           polutionStandard: airData.data.current.pollution.mainus,
-          AQILevelResult: airData.data.current.pollution.aqius
-
+          AQILevelResult: airData.data.current.pollution.aqius,
+          stationName: airData.data.name,
+          calrTime: airData.data.current.pollution.ts.substring(11, 13),
+          aqStationTime: datesubstring
           // currentPositionPM10: airData.data.current.pollution.p2.aqius,
           // currentPositionN2: airData.data.current.pollution.n2.aqius,
           // currentPositionCO: airData.data.current.pollution.co.aqius,
           // currentPositionS2: airData.data.current.pollution.s2.aqius,
           // currentPositionO3: airData.data.current.pollution.o3.aqius
         });
-
+        console.log(
+          "계산된 시간 " + Number(this.state.calrTime) + Number(offsetInHours)
+        );
         if (airData.data.current.pollution.p1 == null) {
           this.setState({
             currentPositionPM10: "0"
@@ -1438,11 +1754,31 @@ export default class App extends React.Component {
     //this._getKeybyGPS();
   };
 
+  _getGrantBtn = () => {
+    return (
+      <TouchableOpacity style={styles.buttonss} onPress={this._getAppUrl}>
+        <Text
+          style={{
+            color: "#fff",
+            fontSize: 15,
+            fontFamily: "NanumSquareRoundEB"
+          }}
+        >
+          {i18n.t("getprobtn")}
+        </Text>
+      </TouchableOpacity>
+    );
+  };
+
   render() {
+    //firebase.analytics().setCurrentScreen("HOME");
     //console.log("!!!!", this.props);
     //console.log(initialscreen);
+    //console.log("APP.js" + this.props);
+
     const {
       isLoaded,
+      granted,
       error,
       isDaytime,
       temperature,
@@ -1482,6 +1818,7 @@ export default class App extends React.Component {
                 }}
               />
             </WeatherContext.Provider>
+            {/* <Text>{this.state.grantedTXT}</Text> */}
             {/* <TouchableOpacity onPress={this._removeLocation}>
               <Text>reset data</Text>
             </TouchableOpacity> */}
@@ -1501,12 +1838,41 @@ export default class App extends React.Component {
               </TouchableOpacity> */}
 
               <Text style={styles.loadingText}>{this.state.loadingText}</Text>
+              <Text style={styles.loadingSubText}>
+                {this.state.grantLocation}
+              </Text>
+
+              {/* {this.state.granted ? (
+                <Text style={styles.loadingSubText}>
+                  {this.state.grantLocation}
+                </Text>
+              ) : (
+                <View>
+                  <Text style={styles.loadingSubText}>
+                    {this.state.grantLocation}
+                  </Text>
+                  <TouchableOpacity
+                    style={styles.buttonss}
+                    onPress={this._notgetLocationAsync}
+                  >
+                    <Text
+                      style={{
+                        color: "#fff",
+                        fontSize: 15
+                      }}
+                    >
+                      Refresh
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              )} */}
             </View>
             <View style={styles.loadbottom}>
+              <Text>{this.state.error}</Text>
               <Text
                 style={{ fontSize: 11, textAlign: "center", color: "#8E8E8E" }}
               >
-                v1.0.13{"\n"}Copyright 2019 Heebean Creative
+                v1.0.20{"\n"}Copyright 2019 Heebean Creative
               </Text>
             </View>
             {error ? <Text style={styles.errorText}>{error}</Text> : null}
@@ -1570,5 +1936,21 @@ const styles = StyleSheet.create({
     //fontFamily: "NanumSquareRoundEB",
     fontSize: 29,
     color: "#656565"
+  },
+  loadingSubText: {
+    //fontFamily: "NanumSquareRoundEB",
+    textAlign: "center",
+    fontSize: 12,
+    color: "#B9B9B9"
+  },
+  buttonss: {
+    paddingVertical: 20,
+    paddingHorizontal: 30,
+    borderRadius: 30,
+    color: "#fff",
+    backgroundColor: "#373737",
+    alignSelf: "center",
+    //fontFamily: "NanumSquareRoundEB",
+    marginTop: 25
   }
 });

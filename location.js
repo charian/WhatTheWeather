@@ -64,6 +64,8 @@ class SelectLocation extends React.Component {
     // console.log("currentLoc " + this.state.currentLoc);
     // console.log("defaultLocation " + this.state.defaultLocation);
     //console.log('selected location ' +this.state.selectLocation);
+
+    console.log("지역명 : " + this.props.value.value.locationtext);
   }
 
   _toggleModal = () => {
@@ -100,7 +102,7 @@ class SelectLocation extends React.Component {
       this.props.value.value._callCDUbyLocation();
       this._loadCurrent();
       this._toggleModal();
-      this._toast();
+      //this._toast();
       this.props.value.value._setDefaultLocation(currentKey);
       console.log("what?" + currentKey);
     } catch (err) {
@@ -284,27 +286,27 @@ class SelectLocation extends React.Component {
     )
   );
 
-  _toast = () => {
-    this.refs.toast.show(
-      <View style={{}}>
-        <Image
-          source={require("./assets/images/save-toast-2x.png")}
-          style={{ width: 74, height: 74, alignSelf: "center" }}
-        />
-        <Text
-          style={{
-            color: "#fff",
-            fontFamily: "NanumSquareRoundEB",
-            fontSize: 16,
-            paddingTop: 10
-          }}
-        >
-          Setup Complete
-        </Text>
-      </View>,
-      1000
-    );
-  };
+  // _toast = () => {
+  //   this.refs.toast.show(
+  //     <View style={{}}>
+  //       <Image
+  //         source={require("./assets/images/save-toast-2x.png")}
+  //         style={{ width: 74, height: 74, alignSelf: "center" }}
+  //       />
+  //       <Text
+  //         style={{
+  //           color: "#fff",
+  //           fontFamily: "NanumSquareRoundEB",
+  //           fontSize: 16,
+  //           paddingTop: 10
+  //         }}
+  //       >
+  //         Setup Complete
+  //       </Text>
+  //     </View>,
+  //     1000
+  //   );
+  // };
   render() {
     //console.log(this.props.value.navigation);
     return (

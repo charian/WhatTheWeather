@@ -411,6 +411,22 @@ class AqScreen extends React.Component {
                 </Text>
               </View>
             </View>
+            <View style={styles.AQstationText}>
+              <Text
+                style={{
+                  fontFamily: "NanumSquareRoundEB",
+                  color: "#fff",
+                  fontSize: 12,
+                  textAlign: "center",
+                  marginBottom: 20,
+                  marginTop: -15
+                }}
+              >
+                {i18n.t("station")} : {this.props.value.stationName}
+                {"\n"}
+                {i18n.t("Measuringtime")} : {this.props.value.aqStationTime}:00
+              </Text>
+            </View>
           </View>
         </ScrollView>
 

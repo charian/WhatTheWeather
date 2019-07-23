@@ -10,8 +10,10 @@ import {
   View,
   Dimensions,
   WebView,
-  AsyncStorage
+  AsyncStorage,
+  Linking
 } from "react-native";
+import { Constants, WebBrowser } from "expo";
 import {
   createStackNavigator,
   createDrawerNavigator,
@@ -53,6 +55,10 @@ const ko = {
   addLocation: "지역 추가"
 };
 
+//console.log("APP CONTAINER" + JSON.stringify(WeatherContext));
+//console.log("APP CONTAINER" + this.props);
+// const obj = WeatherContext;
+// Object.Keys(obj).map(key => console.log(obj.key));
 // export class AppContainer extends React.Component {
 //   componentDidMount = () => {
 //     console.log("import App Container");
@@ -62,33 +68,57 @@ const ko = {
 //   }
 // }
 
+_handleOpenWithWebBrowser = () => {
+  WebBrowser.openBrowserAsync(
+    "https://academy.nomadcoders.co/?utm_source=WhatTheWeather-App"
+  );
+};
+
 this.state = {
   deviceLocale: null,
   initialScreen: "Temp"
   //propsContainer: this[0]
 };
+
 // if ("a" === "a") {
 //   console.log("IF what the fuck initial screen " + this.state.initialScreen);
-//   //t_loadInitial;
+//   _loadInitial = async () => {
+//     console.log(
+//       "async what the fuck initial screen " + this.state.initialScreen
+//     );
+//     try {
+//       const savedInitial = await AsyncStorage.getItem("initialScreen");
+//       this.setState({
+//         initialScreen: savedInitial
+//       });
+//     } catch (err) {
+//       console.log(err);
+//     }
+//   };
 // }
 
 _loadInitial = async () => {
   console.log("async what the fuck initial screen " + this.state.initialScreen);
   try {
     const savedInitial = await AsyncStorage.getItem("initialScreen");
-
     this.setState({
       initialScreen: savedInitial
     });
-    //initialscreen.screens(savedInitial);
   } catch (err) {
-    console.log("error load initial screen");
     console.log(err);
   }
-  console.log(
-    "async after what the fuck initial screen " + this.state.initialScreen
-  );
 };
+
+// const AppNavigator = createSwitchNavigator(
+//   {
+//     AuthChecking: AuthCheckingScreen,
+//     App: { screen: AppDrawer },
+//     Auth: { screen: AuthStack }
+//   },
+//   {
+//     initialRouteName: _loadInitial()
+//   }
+// );
 
 i18n.fallbacks = true;
 i18n.translations = { ko, en };
@@ -102,6 +132,8 @@ let deviceWidth = Dimensions.get("window").width;
 let deviceHeight = Dimensions.get("window").height;
 
 const TempStack = createStackNavigator(
+  //_loadInitial(),
+
   {
     Temp: TempScreen
   },
@@ -436,7 +468,7 @@ const DrawerNavigator = createDrawerNavigator(
         <View
           style={{
             position: "absolute",
-            bottom: 20,
+            bottom: 25,
             paddingLeft: 20,
             paddingRight: 20,
             width: 200,
@@ -447,17 +479,19 @@ const DrawerNavigator = createDrawerNavigator(
             style={{ width: 32, height: 25 }}
             source={require("../assets/images/icon-nomad-2x.png")}
           />
-          <Text
-            style={{
-              color: "#909090",
-              paddingRight: 30,
-              paddingLeft: 10,
-              fontSize: 13,
-              fontFamily: "NanumSquareRoundEB"
-            }}
-          >
-            Special Thanks Nomad Coders and moon
-          </Text>
+          <TouchableOpacity onPress={this._handleOpenWithWebBrowser}>
+            <Text
+              style={{
+                color: "#909090",
+                paddingRight: 30,
+                paddingLeft: 10,
+                fontSize: 13,
+                fontFamily: "NanumSquareRoundEB"
+              }}
+            >
+              Special Thanks Nomad Coders and moondaddi
+            </Text>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     ),
