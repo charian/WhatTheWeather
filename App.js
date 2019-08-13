@@ -17,7 +17,7 @@ import { Font, LinearGradient } from "expo";
 import AppNavigator from "./navigation/AppContainer";
 import { createAppContainer } from "react-navigation";
 import { WeatherContext } from "./Context";
-import { Localization } from "expo-localization";
+import * as Localization from "expo-localization";
 import i18n from "i18n-js";
 import { API_KEY } from "./Keys";
 import { air_KEY } from "./Keys";
@@ -202,7 +202,7 @@ const ko = {
 i18n.fallbacks = true;
 i18n.translations = { ko, en };
 i18n.locale = Localization.locale;
-console.log(i18n.locale);
+//console.log(i18n.locale);
 
 const AppContainer = createAppContainer(AppNavigator);
 
@@ -1483,13 +1483,23 @@ export default class App extends React.Component {
         //return fetch(`https://dapi.kakao.com/v2/local/geo/transcoord.json?x=-73.935242&y=40.730610&input_coord=WGS84&output_coord=TM`,{
         //console.log("참조될 lat : " + this.state.lat);
         //console.log("참조될 long : " + this.state.long);
+
+        // return fetch(
+        //   `https://api.airvisual.com/v2/nearest_station?lat=` +
+        //     this.state.lat +
+        //     `&lon=` +
+        //     this.state.long +
+        //     `&key=${air_KEY}`
+        // );
+
         return fetch(
-          `https://api.airvisual.com/v2/nearest_station?lat=` +
+          `http://api.waqi.info/feed/geo:` +
             this.state.lat +
-            `&lon=` +
+            `;` +
             this.state.long +
-            `&key=${air_KEY}`
+            "/?token=14497beb90905bd6a369577e3fb93247dd0b8455"
         );
+
         //api.airvisual.com/v2/nearest_station?lat={{LATITUDE}}&lon={{LONGITUDE}}&key={{YOUR_API_KEY}}
         //console.log(locationData[0].WeatherText);
       })
@@ -1497,9 +1507,9 @@ export default class App extends React.Component {
       .then(response => response.json())
       .then(airData => {
         //console.log(airData);
-        console.log("air data" + airData.status);
-        console.log("air data city" + airData.data.city);
-        console.log("air data country" + airData.data.country);
+        // console.log("air data" + airData.status);
+        // console.log("air data city" + airData.data.city);
+        // console.log("air data country" + airData.data.country);
         //console.log("air polution" + airpolution);
         // if ((airData.data.current.pollution.p1.aqius =null)) {
         //   this.setState({
@@ -1517,11 +1527,11 @@ export default class App extends React.Component {
         // }
         //console.log();
 
-        if (airData.data.current.pollution.o3 === undefined) {
-          console.log("data have");
-        } else {
-          console.log("data dont have");
-        }
+        // if (airData.data.current.pollution.o3 === undefined) {
+        //   console.log("data have");
+        // } else {
+        //   console.log("data dont have");
+        // }
         var date = new Date();
         var offsetInHours = date.getTimezoneOffset() / -60;
         var datesubstring = date.getHours();
@@ -1530,10 +1540,10 @@ export default class App extends React.Component {
 
         this.setState({
           loadingText: "Get Air Polution Data",
-          polutionStandard: airData.data.current.pollution.mainus,
-          AQILevelResult: airData.data.current.pollution.aqius,
-          stationName: airData.data.name,
-          calrTime: airData.data.current.pollution.ts.substring(11, 13),
+          polutionStandard: airData.data.dominentpol,
+          AQILevelResult: airData.data.aqi,
+          stationName: airData.data.city.name,
+          //calrTime: airData.data.current.pollution.ts.substring(11, 13),
           aqStationTime: datesubstring
           // currentPositionPM10: airData.data.current.pollution.p2.aqius,
           // currentPositionN2: airData.data.current.pollution.n2.aqius,
@@ -1544,74 +1554,94 @@ export default class App extends React.Component {
         console.log(
           "계산된 시간 " + Number(this.state.calrTime) + Number(offsetInHours)
         );
-        if (airData.data.current.pollution.p1 == null) {
+        if (airData.data.iaqi.pm10.v == null) {
           this.setState({
             currentPositionPM10: "0"
           });
         } else {
           this.setState({
-            currentPositionPM10: airData.data.current.pollution.p1.aqius
+            currentPositionPM10: airData.data.iaqi.pm10.v
           });
         }
 
-        if (airData.data.current.pollution.p2 == null) {
+        if (airData.data.iaqi.pm25.v == null) {
           this.setState({
             currentPositionPM25: "0"
           });
         } else {
           this.setState({
-            currentPositionPM25: airData.data.current.pollution.p2.aqius
+            currentPositionPM25: airData.data.iaqi.pm25.v
           });
         }
 
-        if (airData.data.current.pollution.co == null) {
+        if (airData.data.iaqi.co.v == null) {
           this.setState({
             currentPositionCO: "0"
           });
         } else {
           this.setState({
-            currentPositionCO: airData.data.current.pollution.co.aqius
+            currentPositionCO: airData.data.iaqi.co.v
           });
         }
 
-        if (airData.data.current.pollution.s2 == null) {
+        if (airData.data.iaqi.so2.v == null) {
           this.setState({
             currentPositionS2: "0"
           });
         } else {
           this.setState({
-            currentPositionS2: airData.data.current.pollution.s2.aqius
+            currentPositionS2: airData.data.iaqi.so2.v
           });
         }
 
-        if (airData.data.current.pollution.o3 == null) {
+        if (airData.data.iaqi.o3.v == null) {
           this.setState({
             currentPositionO3: "0"
           });
         } else {
           this.setState({
-            currentPositionO3: airData.data.current.pollution.o3.aqius
+            currentPositionO3: airData.data.iaqi.o3.v
           });
         }
 
-        if (airData.data.current.pollution.n2 == null) {
+        if (airData.data.iaqi.no2.v == null) {
           this.setState({
             currentPositionN2: "0"
           });
         } else {
           this.setState({
-            currentPositionN2: airData.data.current.pollution.n2.aqius
+            currentPositionN2: airData.data.iaqi.no2.v
           });
         }
 
-        if (airData.data.current.pollution.mainus === "p2") {
+        if (airData.data.iaqi.dominentpol === "pm25") {
           this.setState({
             polutionStandard: "PM 2.5"
           });
         }
-        if (airData.data.current.pollution.mainus === "p1") {
+        if (airData.data.iaqi.dominentpol === "pm10") {
           this.setState({
             polutionStandard: "PM 10"
+          });
+        }
+        if (airData.data.iaqi.dominentpol === "co") {
+          this.setState({
+            polutionStandard: "CO"
+          });
+        }
+        if (airData.data.iaqi.dominentpol === "no2") {
+          this.setState({
+            polutionStandard: "NO2"
+          });
+        }
+        if (airData.data.iaqi.dominentpol === "o3") {
+          this.setState({
+            polutionStandard: "O3"
+          });
+        }
+        if (airData.data.iaqi.dominentpol === "so2") {
+          this.setState({
+            polutionStandard: "SO2"
           });
         }
 
@@ -1745,6 +1775,8 @@ export default class App extends React.Component {
     // this.setState({
     //   isLoaded: true
     // });
+
+    this._getAQfromaqiCN();
   };
 
   _setSettingValue = settingValue => {
@@ -1768,6 +1800,28 @@ export default class App extends React.Component {
         </Text>
       </TouchableOpacity>
     );
+  };
+
+  _getAQfromaqiCN = () => {
+    fetch(
+      `http://api.waqi.info/feed/geo:` +
+        this.state.lat +
+        `;` +
+        this.state.long +
+        "/?token=14497beb90905bd6a369577e3fb93247dd0b8455"
+    )
+      .then(response => response.json())
+      .then(AQCN => {
+        console.log("AQCN Start" + JSON.stringify(AQCN));
+      });
+    //  $ curl -i "http://api.waqi.info/feed/shanghai/?token=demo" aqicn으로 변경 예정
+    //  /feed/geo::lat;:lng/?token=:token
+    // this.state.lat +
+    // `&lon=` +
+    // this.state.long +
+    // `&key=${air_KEY}`
+
+    //{"status":"ok","data":{"aqi":124,"idx":1437,"attributions":[{"url":"http://www.semc.gov.cn/","name":"Shanghai Environment Monitoring Center(上海市环境监测中心)"},{"url":"http://106.37.208.233:20035/emcpublish/","name":"China National Urban air quality real-time publishing platform (全国城市空气质量实时发布平台)"},{"url":"https://china.usembassy-china.org.cn/embassy-consulates/shanghai/air-quality-monitor-stateair/","name":"U.S. Consulate Shanghai Air Quality Monitor"},{"url":"https://waqi.info/","name":"World Air Quality Index Project"}],"city":{"geo":[31.2047372,121.4489017],"name":"Shanghai (上海)","url":"https://aqicn.org/city/shanghai"},"dominentpol":"pm25","iaqi":{"co":{"v":7.3},"h":{"v":65.7},"no2":{"v":24.3},"o3":{"v":38.2},"p":{"v":1002.3},"pm10":{"v":56},"pm25":{"v":124},"so2":{"v":5.1},"t":{"v":33.1},"w":{"v":0.2}},"time":{"s":"2019-07-24 09:00:00","tz":"+08:00","v":1563958800},"debug":{"sync":"2019-07-24T10:52:52+09:00"}}}
   };
 
   render() {
@@ -1872,7 +1926,7 @@ export default class App extends React.Component {
               <Text
                 style={{ fontSize: 11, textAlign: "center", color: "#8E8E8E" }}
               >
-                v1.0.20{"\n"}Copyright 2019 Heebean Creative
+                v1.0.22{"\n"}Copyright 2019 Heebean Creative
               </Text>
             </View>
             {error ? <Text style={styles.errorText}>{error}</Text> : null}
