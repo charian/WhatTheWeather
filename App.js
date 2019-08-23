@@ -24,10 +24,6 @@ import { air_KEY } from "./Keys";
 import { ifIphoneX } from "react-native-iphone-x-helper";
 import publicIP from "react-native-public-ip";
 import * as firebase from "firebase";
-
-let deviceWidth = Dimensions.get("window").width;
-let deviceHeight = Dimensions.get("window").height;
-
 const firebaseConfig = {
   apiKey: "AIzaSyBGKpsEYb4Dr3pAfrotNTWGVvOLmS9-OGY",
   authDomain: "whattheweather-8064a.firebaseapp.com",
@@ -37,6 +33,9 @@ const firebaseConfig = {
   messagingSenderId: "803910516890",
   appId: "1:803910516890:web:c73dc0506ee4a225"
 };
+firebase.initializeApp(firebaseConfig);
+let deviceWidth = Dimensions.get("window").width;
+let deviceHeight = Dimensions.get("window").height;
 
 const en = {
   airquality: "Air Quality",
@@ -636,17 +635,13 @@ export default class App extends React.Component {
     });
   };
 
-  _firebase = () => {
-    console.log("firebase start");
+  // _firebase = () => {
+  //   firebase.initializeApp(firebaseConfig);
 
-    console.log("firebase start 1");
-    firebase.initializeApp(firebaseConfig);
-    console.log("firebase start 2");
-  };
+  // };
 
   async componentDidMount() {
-    this._firebase();
-
+    // this._firebase();
     // var offset = new Date().getTimezoneOffset();
     // console.log(Intl.DateTimeFormat().resolvedOptions().timeZone);
     this.backHandlerListener = BackHandler.addEventListener(
