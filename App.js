@@ -25,16 +25,18 @@ import { ifIphoneX } from "react-native-iphone-x-helper";
 import publicIP from "react-native-public-ip";
 import * as firebase from "firebase";
 
-//asd
-// const firebaseConfig = {
-//   apiKey: "AIzaSyBGKpsEYb4Dr3pAfrotNTWGVvOLmS9-OGY"
-//   //authDomain: "whattheweather-8064a.firebaseapp.com",
-//   //databaseURL: "https://whattheweather-8064a.firebaseio.com"
-//   //storageBucket: "bucket.appspot.com"
-// };
-
 let deviceWidth = Dimensions.get("window").width;
 let deviceHeight = Dimensions.get("window").height;
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBGKpsEYb4Dr3pAfrotNTWGVvOLmS9-OGY",
+  authDomain: "whattheweather-8064a.firebaseapp.com",
+  databaseURL: "https://whattheweather-8064a.firebaseio.com",
+  projectId: "whattheweather-8064a",
+  storageBucket: "whattheweather-8064a.appspot.com",
+  messagingSenderId: "803910516890",
+  appId: "1:803910516890:web:c73dc0506ee4a225"
+};
 
 const en = {
   airquality: "Air Quality",
@@ -635,17 +637,11 @@ export default class App extends React.Component {
   };
 
   _firebase = () => {
-    var firebaseConfig = {
-      apiKey: "AIzaSyC4__FCSt7Zj8IB5VJ2WYEdamJv1MJc8Cs",
-      authDomain: "whattheweather-8064a.firebaseapp.com",
-      databaseURL: "https://whattheweather-8064a.firebaseio.com",
-      projectId: "whattheweather-8064a",
-      storageBucket: "whattheweather-8064a.appspot.com",
-      messagingSenderId: "803910516890",
-      appId: "1:803910516890:ios:d4a6d5f4ab7c1634"
-    };
+    console.log("firebase start");
 
-    firebase.initializeApp = { firebaseConfig };
+    console.log("firebase start 1");
+    firebase.initializeApp(firebaseConfig);
+    console.log("firebase start 2");
   };
 
   async componentDidMount() {
@@ -1848,6 +1844,7 @@ export default class App extends React.Component {
       currentPositionPM10,
       currentPositionPM25
     } = this.state;
+
     return (
       <View style={styles.container}>
         <StatusBar barStyle="light-content" />
