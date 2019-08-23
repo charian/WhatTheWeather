@@ -23,8 +23,8 @@ import { API_KEY } from "./Keys";
 import { air_KEY } from "./Keys";
 import { ifIphoneX } from "react-native-iphone-x-helper";
 import publicIP from "react-native-public-ip";
+import * as firebase from "firebase";
 
-import firebase from "firebase";
 //asd
 // const firebaseConfig = {
 //   apiKey: "AIzaSyBGKpsEYb4Dr3pAfrotNTWGVvOLmS9-OGY"
@@ -636,13 +636,13 @@ export default class App extends React.Component {
 
   _firebase = () => {
     var firebaseConfig = {
-      apiKey: "AIzaSyBGKpsEYb4Dr3pAfrotNTWGVvOLmS9-OGY",
+      apiKey: "AIzaSyC4__FCSt7Zj8IB5VJ2WYEdamJv1MJc8Cs",
       authDomain: "whattheweather-8064a.firebaseapp.com",
       databaseURL: "https://whattheweather-8064a.firebaseio.com",
       projectId: "whattheweather-8064a",
       storageBucket: "whattheweather-8064a.appspot.com",
       messagingSenderId: "803910516890",
-      appId: "1:803910516890:web:c73dc0506ee4a225"
+      appId: "1:803910516890:ios:d4a6d5f4ab7c1634"
     };
 
     firebase.initializeApp = { firebaseConfig };
