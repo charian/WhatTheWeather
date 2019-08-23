@@ -26,12 +26,12 @@ import publicIP from "react-native-public-ip";
 
 import firebase from "firebase";
 //asd
-const firebaseConfig = {
-  apiKey: "AIzaSyBGKpsEYb4Dr3pAfrotNTWGVvOLmS9-OGY"
-  //authDomain: "whattheweather-8064a.firebaseapp.com",
-  //databaseURL: "https://whattheweather-8064a.firebaseio.com"
-  //storageBucket: "bucket.appspot.com"
-};
+// const firebaseConfig = {
+//   apiKey: "AIzaSyBGKpsEYb4Dr3pAfrotNTWGVvOLmS9-OGY"
+//   //authDomain: "whattheweather-8064a.firebaseapp.com",
+//   //databaseURL: "https://whattheweather-8064a.firebaseio.com"
+//   //storageBucket: "bucket.appspot.com"
+// };
 
 let deviceWidth = Dimensions.get("window").width;
 let deviceHeight = Dimensions.get("window").height;
