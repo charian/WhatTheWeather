@@ -635,15 +635,17 @@ export default class App extends React.Component {
   };
 
   _firebase = () => {
-    firebase.initializeApp = {
-      apiKey: "AIzaSyAIj24nkV5CRFe-9QIzBPz96L6oQ0X8gJk",
-      authDomain: "api-6908354807258023543-445984.firebaseapp.com",
-      databaseURL: "https://api-6908354807258023543-445984.firebaseio.com",
-      projectId: "api-6908354807258023543-445984",
-      storageBucket: "",
-      messagingSenderId: "810194407762",
-      appId: "1:810194407762:web:eab9597751bc6256"
+    var firebaseConfig = {
+      apiKey: "AIzaSyBGKpsEYb4Dr3pAfrotNTWGVvOLmS9-OGY",
+      authDomain: "whattheweather-8064a.firebaseapp.com",
+      databaseURL: "https://whattheweather-8064a.firebaseio.com",
+      projectId: "whattheweather-8064a",
+      storageBucket: "whattheweather-8064a.appspot.com",
+      messagingSenderId: "803910516890",
+      appId: "1:803910516890:web:c73dc0506ee4a225"
     };
+
+    firebase.initializeApp = { firebaseConfig };
   };
 
   async componentDidMount() {
