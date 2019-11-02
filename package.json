@@ -18,7 +18,7 @@
     "expo": "^33.0.0",
     "firebase": "^6.4.1",
     "i18n-js": "^3.1.0",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.13",
     "react": "16.8.3",
     "react-debounce-input": "^3.2.0",
     "react-native": "https://github.com/expo/react-native/archive/sdk-33.0.0.tar.gz",
